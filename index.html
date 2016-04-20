@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Redux History Sync</title>
+    <script src="https://npmcdn.com/react@15.0.1/dist/react.js" charset="utf-8"></script> 
+    <script src="https://npmcdn.com/react-dom@15.0.1/dist/react-dom.js" charset="utf-8"></script>
+    <script src="https://npmcdn.com/redux@3.3.1/dist/redux.js" charset="utf-8"></script>
+    <script src="https://npmcdn.com/react-redux@4.4.1/dist/react-redux.js" charset="utf-8"></script> 
+    <script src="https://npmcdn.com/history@2.0.1/umd/History.min.js" charset="utf-8"></script>
+    <!-- No UMD build for react-router-redux yet -->
+    <script src="react-router-redux/dist/ReactRouterRedux.js" charset="utf-8"></script>
+    <script src="https://npmcdn.com/babel-transform-in-browser@6.4.6/dist/btib.min.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="text/es2015" charset="utf-8">
+     // constants.js
+     const SET_OPERATION = 'SET_OPERATION';
+
+     // actionCreators.js
+     function setOperation(name) {
+       return {
+         type: SET_OPERATION,
+         name,
+       };
+     }
+
+     // operationReducer.js
+     const { LOCATION_CHANGE } = ReactRouterRedux;
+     
+     function operationReducer(state = "", action) {
+       if (action.type === SET_OPERATION) {
+         return action.name;
+       }
+
+       if (action.type === LOCATION_CHANGE) {
+         const pathname = action.payload.pathname;
+         const [_, __, operation = ""] = pathname.split('/');
+         return operation;
+       }
+       
+       return state;
+     }
+
+     // routerReducer.js
+     // Note this is copied and modified from eact-router-redux/reducer
+     const initialState = { locationBeforeTransitions: null };
+
+     function routerReducer(state = initialState, action) {
+       // The LOCATION_CHANGE case is copied from react-router-redux/reducer
+       if (action.type === LOCATION_CHANGE) {
+         return { ...state, locationBeforeTransitions: action.payload }
+       }
+
+       // Additional code to change location state in response to your own app's actions
+       if (action.type === SET_OPERATION) {
+         const { name } = action;
+         let location = state.locationBeforeTransitions;
+         const pathname = `/prototype-viewer/${name}`;
+         location = { ...location, pathname, action: 'PUSH' };
+         return { ...state, locationBeforeTransitions: location };
+       }
+
+       return state;
+     }
+
+     // Configure redux
+     const { createStore, combineReducers } = Redux;
+     const { connect, Provider } = ReactRedux;
+
+     const rootReducer = combineReducers({
+       operation: operationReducer,
+       routing: routerReducer,
+     });
+
+     const store = createStore(rootReducer);
+
+     // Configure syncing between your store and browser history
+     const { syncHistoryWithStore } = ReactRouterRedux;
+     const { createHistory } = History;
+     syncHistoryWithStore(
+       createHistory(),
+       store,
+     );
+
+     let PuzzleApp = ({ operation, onChangeOperation }) => {
+       const isCorrect = operation === 'divide';
+       return (
+         <div>
+           <h1>Make the maths work!</h1>
+           <p>
+             10
+             {' '}
+             <select size={5} value={operation} onChange={e => onChangeOperation(e.target.value)}>
+               <option value="">--- Choose operation ---</option>
+               <option value="add">+</option>
+               <option value="subtract">-</option>
+               <option value="multiply">*</option>
+               <option value="divide">÷</option>
+             </select>
+             {' '}
+         2 = 5
+         {' '}
+         {isCorrect && <span style={{color: 'green' }}>{'\u2714'}</span>}
+         {operation && !isCorrect && <span style={{color: 'red' }}>{'\u2718'}</span>}
+           </p>
+         </div>
+       );
+     };
+
+     // Connect to redux
+     const mapDispatchToProps = dispatch => {
+       return {
+         onChangeOperation: name => dispatch(setOperation(name))
+       };
+     }
+     const mapStateToProps = state => state;
+     PuzzleApp = connect(
+       mapStateToProps,
+       mapDispatchToProps,
+     )(PuzzleApp);
+     
+     ReactDOM.render(
+       <Provider store={store}>
+         <PuzzleApp />
+       </Provider>,
+       document.getElementById('app')
+     );
+    </script>
+  </body>
+</html>
