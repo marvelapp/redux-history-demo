@@ -3,14 +3,18 @@
   <head>
     <meta charset="utf-8">
     <title>Redux History Sync</title>
-    <script src="https://npmcdn.com/react@15.0.1/dist/react.js" charset="utf-8"></script> 
+    <script src="https://npmcdn.com/react@15.0.1/dist/react.js" charset="utf-8"></script>
     <script src="https://npmcdn.com/react-dom@15.0.1/dist/react-dom.js" charset="utf-8"></script>
     <script src="https://npmcdn.com/redux@3.3.1/dist/redux.js" charset="utf-8"></script>
-    <script src="https://npmcdn.com/react-redux@4.4.1/dist/react-redux.js" charset="utf-8"></script> 
+    <script src="https://npmcdn.com/react-redux@4.4.1/dist/react-redux.js" charset="utf-8"></script>
     <script src="https://npmcdn.com/history@2.0.1/umd/History.min.js" charset="utf-8"></script>
     <!-- No UMD build for react-router-redux yet -->
     <script src="react-router-redux/dist/ReactRouterRedux.js" charset="utf-8"></script>
     <script src="https://npmcdn.com/babel-transform-in-browser@6.4.6/dist/btib.min.js"></script>
+
+    <link href="css/sanitize.css" rel="stylesheet" type="text/css" />
+    <link href="css/wtf-forms.css" rel="stylesheet" type="text/css" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     <div id="app"></div>
@@ -28,7 +32,7 @@
 
      // operationReducer.js
      const { LOCATION_CHANGE } = ReactRouterRedux;
-     
+
      function operationReducer(state = "", action) {
        if (action.type === SET_OPERATION) {
          return action.name;
@@ -39,7 +43,7 @@
          const [_, __, operation = ""] = pathname.split('/');
          return operation;
        }
-       
+
        return state;
      }
 
@@ -87,24 +91,31 @@
      let PuzzleApp = ({ operation, onChangeOperation }) => {
        const isCorrect = operation === 'divide';
        return (
-         <div>
-           <h1>Make the maths work!</h1>
-           <p>
-             10
-             {' '}
-             <select size={5} value={operation} onChange={e => onChangeOperation(e.target.value)}>
-               <option value="">--- Choose operation ---</option>
-               <option value="add">+</option>
-               <option value="subtract">-</option>
-               <option value="multiply">*</option>
-               <option value="divide">÷</option>
-             </select>
-             {' '}
-         2 = 5
-         {' '}
-         {isCorrect && <span style={{color: 'green' }}>{'\u2714'}</span>}
-         {operation && !isCorrect && <span style={{color: 'red' }}>{'\u2718'}</span>}
-           </p>
+         <div className="container">
+           <div className="inner">
+             <div className="box">
+               <h1 className="heading">Make the maths work!</h1>
+
+               <div className="ta-center">
+                 <span>10</span>
+
+                 <div className="select">
+                   <select value={operation} onChange={e => onChangeOperation(e.target.value)}>
+                     <option calue="" selected>?</option>
+                     <option value="add">+</option>
+                     <option value="subtract">-</option>
+                     <option value="multiply">*</option>
+                     <option value="divide">÷</option>
+                   </select>
+                 </div>
+
+                 <span>2 = 5</span>
+               </div>
+
+               {isCorrect && <span className="response" style={{color: '#13CE66' }}>{'\u2714'}</span>}
+               {operation && !isCorrect && <span className="response" style={{color: '#FF4949' }}>{'\u2718'}</span>}
+             </div>
+           </div>
          </div>
        );
      };
@@ -120,7 +131,7 @@
        mapStateToProps,
        mapDispatchToProps,
      )(PuzzleApp);
-     
+
      ReactDOM.render(
        <Provider store={store}>
          <PuzzleApp />
