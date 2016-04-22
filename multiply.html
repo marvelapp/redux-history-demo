@@ -61,7 +61,7 @@
        if (action.type === SET_OPERATION) {
          const { name } = action;
          let location = state.locationBeforeTransitions;
-         const pathname = `/redux-hisory-demo/${name}`;
+         const pathname = `/redux-history-demo/${name}`;
          location = { ...location, pathname, action: 'PUSH' };
          return { ...state, locationBeforeTransitions: location };
        }
