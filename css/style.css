@@ -58,3 +58,11 @@ body,
     font-size: 24px;
     text-align: center;
 }
+
+.link {
+    color: #1FB6FF;
+}
+
+.link:hover {
+    color: #009EEB;
+}
