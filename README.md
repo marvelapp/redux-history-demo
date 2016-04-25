@@ -1,6 +1,5 @@
 # redux-history-demo
 
-Silly game to show syncing history with redux store.
+Simple puzzle to show we use [react-router-redux](https://github.com/reactjs/react-router-redux).
 
 Accompanies our [blog post on history and redux](TODO LINK)
-
