@@ -59,6 +59,11 @@ body,
     text-align: center;
 }
 
+.link-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
 .link {
     color: #1FB6FF;
 }
